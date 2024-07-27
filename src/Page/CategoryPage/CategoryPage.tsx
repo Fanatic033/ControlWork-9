@@ -1,4 +1,4 @@
-import Modal from '../../Components/Header/Modal.tsx';
+import Modal from '../../Components/Modal /Modal.tsx';
 import {useEffect, useState} from 'react';
 import CategoryForm from '../../Components/CategoryForm/CategoryForm.tsx';
 import {useAppDispatch, useAppSelector} from '../../hooks/redux-hooks.ts';

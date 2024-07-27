@@ -3,10 +3,23 @@ export interface ApiCategory {
   name: string;
 }
 
-export interface ApiCategories {
-  [key: string]: ApiCategory;
-}
+
 
 export interface Category extends ApiCategory {
   id: string;
+}
+
+export interface Transaction {
+  id: string;
+  amount: number;
+  categoryID: string;
+  type: 'income' | 'expense';
+  createdAt: string;
+}
+
+export interface ApiTransaction {
+  amount: number;
+  categoryID: string;
+  type: 'income' | 'expense';
+  createdAt: string;
 }

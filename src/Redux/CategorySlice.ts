@@ -1,7 +1,6 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {Category} from '../types.ts';
-import {deleteCategory, fetchCategories, postCategory} from './CategoryThunks.ts';
-import {RootState} from './store.ts';
+import {deleteCategory, editCategory, fetchCategories, postCategory} from './CategoryThunks.ts';
 
 export interface CategoryState {
   categories: Category[];
@@ -28,17 +27,31 @@ const categorySlice = createSlice({
       })
       .addCase(fetchCategories.rejected, (state) => {
         state.isLoading = false;
-      })
-      builder
+      });
+    builder
       .addCase(postCategory.pending, (state) => {
         state.isLoading = true;
       })
       .addCase(postCategory.rejected, (state) => {
         state.isLoading = false;
-      })
-      builder
+      });
+    builder
       .addCase(deleteCategory.fulfilled, (state, action: PayloadAction<string>) => {
         state.categories = state.categories.filter(category => category.id !== action.payload);
+      });
+    builder
+      .addCase(editCategory.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(editCategory.fulfilled, (state, action: PayloadAction<Category>) => {
+        state.isLoading = false;
+        const index = state.categories.findIndex((category) => category.id === action.payload.id);
+        if (index !== -1) {
+          state.categories[index] = action.payload;
+        }
+      })
+      .addCase(editCategory.rejected, (state) => {
+        state.isLoading = false;
       });
   },
   selectors: {
@@ -48,5 +61,4 @@ const categorySlice = createSlice({
 });
 
 export const {selectLoading, selectCategory} = categorySlice.selectors;
-export const categorySelector = (state: RootState) => state.category.categories;
 export const categoryReducer = categorySlice.reducer;

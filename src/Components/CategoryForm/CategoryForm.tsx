@@ -29,7 +29,6 @@ const CategoryForm: React.FC<Props> = ({existingCategory}) => {
     } else {
       await dispatch(postCategory(newCategory));
     }
-
     dispatch(fetchCategories);
     navigate('/');
   };
