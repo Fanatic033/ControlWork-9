@@ -1,11 +1,8 @@
 import Modal from '../../Components/Header/Modal.tsx';
 import {useEffect, useState} from 'react';
 import CategoryForm from '../../Components/CategoryForm/CategoryForm.tsx';
-import {useAppSelector} from '../../hooks/redux-hooks.ts';
-import {categorySelector} from '../../Redux/CategorySlice.ts';
 
 const CategoryPage = () => {
-  const categories = useAppSelector(categorySelector);
 
   const [showModal, setShowModal] = useState(false);
 
