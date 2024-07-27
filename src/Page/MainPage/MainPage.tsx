@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import {useNavigate} from 'react-router-dom';
 import {useAppDispatch, useAppSelector} from '../../hooks/redux-hooks.ts';
 import {selectTransactions} from '../../Redux/TransactionSlice.ts';
-import {selectLoading} from '../../Redux/CategorySlice.ts';
+import {selectCategory, selectLoading} from '../../Redux/CategorySlice.ts';
 import {Transaction} from '../../types.ts';
 import {deleteTransaction, fetchTransactions} from '../../Redux/TransactionThunks.ts';
 import TransactionModal from '../../Components/Modal /TransactionModal.tsx';
@@ -12,6 +12,7 @@ import {fetchCategories} from '../../Redux/CategoryThunks.ts';
 const MainPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const transactions = useAppSelector(selectTransactions);
+  const categories = useAppSelector(selectCategory);
   const isLoading = useAppSelector(selectLoading);
   const [showModal, setShowModal] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
@@ -57,12 +58,13 @@ const MainPage: React.FC = () => {
         </div>
       ) : (
         <ul className="list-group">
-          {transactions.map(transaction => {
+          {Array.from(transactions).sort((a, b) => dayjs(b.createdAt).valueOf() - dayjs(a.createdAt).valueOf()).map(transaction => {
+            const category = categories.find(cat => cat.id === transaction.categoryID);
             return(
             <li key={transaction.id} className="list-group-item d-flex justify-content-between align-items-center mb-4">
               <div>
                 <span>{dayjs(transaction.createdAt).format('DD.MM.YYYY HH:mm:ss')}</span>
-                <span className="ms-3">{transaction.id}</span>
+                <span className="ms-3">{category?.name}</span>
                 <span className={`ms-3 ${transaction.type === 'income' ? 'text-success' : 'text-danger'}`}>
                   {transaction.type === 'income' ? '+' : '-'}{transaction.amount} KGS
                 </span>

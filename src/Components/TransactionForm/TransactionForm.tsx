@@ -25,7 +25,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onClose }) => {
     if (amount === '' || category === '') return;
     const newTransaction: Omit<Transaction, 'id'> = {
       type,
-      category,
+      categoryID: category,
       amount: Number(amount),
       createdAt: new Date().toISOString(),
     };
