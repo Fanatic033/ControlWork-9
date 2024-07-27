@@ -32,3 +32,8 @@ export const deleteCategory = createAsyncThunk<string,string,{state:RootState}>(
     return response.data
   }
 )
+
+export const editCategory = createAsyncThunk<Category,Category,{state:RootState}>('category/editCategory', async ({id,name,type}) => {
+const response = await axiosApi.put(`/category/${id}.json`, {name,type})
+  return response.data;
+})
