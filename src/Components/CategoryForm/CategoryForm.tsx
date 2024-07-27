@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {postCategory} from '../../Redux/CategoryThunks.ts';
+import {fetchCategories, postCategory} from '../../Redux/CategoryThunks.ts';
 import {useAppDispatch} from '../../hooks/redux-hooks.ts';
 
 const CategoryForm: React.FC = () => {
@@ -9,11 +9,12 @@ const CategoryForm: React.FC = () => {
   const [name, setName] = useState('');
   const [type, setType] = useState<'income' | 'expense'>('income');
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     const newCategory = { name, type };
-    dispatch(postCategory(newCategory));
-    navigate('/category');
+    await dispatch(postCategory(newCategory));
+    dispatch(fetchCategories);
+    navigate('/');
   };
 
   return (

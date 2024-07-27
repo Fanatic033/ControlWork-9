@@ -1,6 +1,7 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import axiosApi from '../axiosApi.ts';
-import {ApiCategory} from '../types.ts';
+import {ApiCategory, Category} from '../types.ts';
+import {RootState} from './store.ts';
 
 export const postCategory = createAsyncThunk<ApiCategory, { name: string; type: 'income' | 'expense'; }, {
   rejectValue: string
@@ -13,8 +14,21 @@ export const postCategory = createAsyncThunk<ApiCategory, { name: string; type: 
   }
 });
 
-// export const fetchCategories = createAsyncThunk<Category[],void,{state:RootState}>('category/fetchCategories',
-//   async
-//   )
 
-// СДЕЛАТЬ Лист вывести все категории сделать форму для отправки категории сделать модалку
+export const fetchCategories = createAsyncThunk<Category[], void, { state: RootState }>(
+  'category/fetchCategories',
+  async () => {
+    const {data} = await axiosApi.get<{ [key: string]: ApiCategory }>('/category.json');
+    return Object.keys(data).map((key) => ({
+      ...data[key],
+      id: key,
+    }));
+  })
+
+export const deleteCategory = createAsyncThunk<string,string,{state:RootState}>(
+  'category/deleteCategory',
+  async (id) =>{
+    const response = await axiosApi.delete(`/category/${id}.json`);
+    return response.data
+  }
+)
