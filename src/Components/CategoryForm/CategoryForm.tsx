@@ -1,8 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {editCategory, fetchCategories, postCategory} from '../../Redux/CategoryThunks.ts';
-import {useAppDispatch} from '../../hooks/redux-hooks.ts';
+import {useAppDispatch, useAppSelector} from '../../hooks/redux-hooks.ts';
 import {Category} from '../../types.ts';
+import {selectLoading} from '../../Redux/CategorySlice.ts';
+import ButtonSpinner from '../ButtonSpinner/ButtonSpinner.tsx';
+import { toast } from 'react-toastify';
 
 interface Props {
   existingCategory: Category | null;
@@ -13,6 +16,7 @@ const CategoryForm: React.FC<Props> = ({existingCategory}) => {
   const dispatch = useAppDispatch();
   const [name, setName] = useState('');
   const [type, setType] = useState<'income' | 'expense'>('income');
+  const isLoading = useAppSelector(selectLoading);
 
   useEffect(() => {
     if (existingCategory) {
@@ -23,14 +27,20 @@ const CategoryForm: React.FC<Props> = ({existingCategory}) => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    const newCategory = {name, type};
-    if (existingCategory) {
-      await dispatch(editCategory({id: existingCategory.id, ...newCategory}));
-    } else {
-      await dispatch(postCategory(newCategory));
+    try {
+      const newCategory = {name, type};
+      if (existingCategory) {
+        await dispatch(editCategory({id: existingCategory.id, ...newCategory}));
+      } else {
+        await dispatch(postCategory(newCategory));
+      }
+      dispatch(fetchCategories());
+      toast.success('success')
+      navigate('/');
+    }catch (e){
+      toast.error('error')
     }
-    dispatch(fetchCategories);
-    navigate('/');
+
   };
 
   return (
@@ -48,7 +58,10 @@ const CategoryForm: React.FC<Props> = ({existingCategory}) => {
           <option value="expense">Expense</option>
         </select>
       </div>
-      <button type="submit" className="btn btn-primary">Submit</button>
+      <button type="submit" className="btn btn-primary" disabled={isLoading}>
+        Submit
+        {isLoading && <ButtonSpinner/>}
+      </button>
     </form>
   );
 };

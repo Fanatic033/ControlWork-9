@@ -30,15 +30,17 @@ const MainPage: React.FC = () => {
   };
 
   const onEdit = (transaction: Transaction) => {
-    console.log(transaction)
+    console.log(transaction);
     setShowModal(true);
     setEditingTransaction(transaction);
   };
 
   const onDelete = async (transactionID: string) => {
-    await dispatch(deleteTransaction(transactionID));
-    dispatch(fetchTransactions());
-    navigate('/')
+    if (window.confirm('Вы уверены?')) {
+      await dispatch(deleteTransaction(transactionID));
+      dispatch(fetchTransactions());
+    }
+    navigate('/');
   };
 
   const total = transactions.reduce((acc, transaction) => {
@@ -60,24 +62,26 @@ const MainPage: React.FC = () => {
         <ul className="list-group">
           {Array.from(transactions).sort((a, b) => dayjs(b.createdAt).valueOf() - dayjs(a.createdAt).valueOf()).map(transaction => {
             const category = categories.find(cat => cat.id === transaction.categoryID);
-            return(
-            <li key={transaction.id} className="list-group-item d-flex justify-content-between align-items-center mb-4">
-              <div>
-                <span>{dayjs(transaction.createdAt).format('DD.MM.YYYY HH:mm:ss')}</span>
-                <span className="ms-3">{category?.name}</span>
-                <span className={`ms-3 ${transaction.type === 'income' ? 'text-success' : 'text-danger'}`}>
+            return (
+              <li key={transaction.id}
+                  className="list-group-item d-flex justify-content-between align-items-center mb-4">
+                <div>
+                  <span>{dayjs(transaction.createdAt).format('DD.MM.YYYY HH:mm:ss')}</span>
+                  <span className="ms-3">{category?.name}</span>
+                  <span className={`ms-3 ${transaction.type === 'income' ? 'text-success' : 'text-danger'}`}>
                   {transaction.type === 'income' ? '+' : '-'}{transaction.amount} KGS
                 </span>
-              </div>
-              <div>
-                <button onClick={() => onEdit(transaction)} className="btn btn-warning me-2">Edit</button>
-                <button onClick={() => onDelete(transaction.id)} className="btn btn-danger">Delete</button>
-              </div>
-            </li>
-          )})}
+                </div>
+                <div>
+                  <button onClick={() => onEdit(transaction)} className="btn btn-warning me-2">Edit</button>
+                  <button onClick={() => onDelete(transaction.id)} className="btn btn-danger">Delete</button>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       )}
-      {showModal && <TransactionModal transaction={editingTransaction} onClose={closeModal} />}
+      {showModal && <TransactionModal transaction={editingTransaction} onClose={closeModal}/>}
     </div>
   );
 };

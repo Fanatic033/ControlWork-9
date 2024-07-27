@@ -1,20 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {useAppDispatch, useAppSelector} from '../../hooks/redux-hooks.ts';
-import {selectCategory} from '../../Redux/CategorySlice.ts';
+import {selectCategory, selectLoading} from '../../Redux/CategorySlice.ts';
 import {fetchTransactions, postTransaction} from '../../Redux/TransactionThunks.ts';
 import {Transaction} from '../../types.ts';
+import ButtonSpinner from '../ButtonSpinner/ButtonSpinner.tsx';
+import {toast} from 'react-toastify';
 
 
 interface TransactionFormProps {
   onClose: () => void;
 }
 
-const TransactionForm: React.FC<TransactionFormProps> = ({ onClose }) => {
+const TransactionForm: React.FC<TransactionFormProps> = ({onClose}) => {
   const dispatch = useAppDispatch();
   const categories = useAppSelector(selectCategory);
   const [type, setType] = useState<'income' | 'expense'>('income');
   const [category, setCategory] = useState('');
   const [amount, setAmount] = useState<number | ''>('');
+
+  const isLoading = useAppSelector(selectLoading);
 
   useEffect(() => {
     dispatch(fetchTransactions());
@@ -22,20 +26,25 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onClose }) => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (amount === '' || category === '') return;
-    const newTransaction: Omit<Transaction, 'id'> = {
-      type,
-      categoryID: category,
-      amount: Number(amount),
-      createdAt: new Date().toISOString(),
-    };
-    await dispatch(postTransaction(newTransaction));
-    dispatch(fetchTransactions());
-    onClose();
+    try {
+      if (amount === '' || category === '') return;
+      const newTransaction: Omit<Transaction, 'id'> = {
+        type,
+        categoryID: category,
+        amount: Number(amount),
+        createdAt: new Date().toISOString(),
+      };
+      await dispatch(postTransaction(newTransaction));
+      dispatch(fetchTransactions());
+      onClose();
+      toast.success('success')
+    }catch (error) {
+      toast.error('error');
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className={'p-3'}>
       <div className="mb-3">
         <label htmlFor="type" className="form-label">Type</label>
         <select
@@ -75,7 +84,10 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onClose }) => {
           required
         />
       </div>
-      <button type="submit" className="btn btn-primary">Submit</button>
+      <button type="submit" className="btn btn-primary text-center" disabled={isLoading}>
+        Submit
+        {isLoading && <ButtonSpinner/>}
+      </button>
     </form>
   );
 };

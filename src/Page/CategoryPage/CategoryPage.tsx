@@ -27,8 +27,10 @@ const CategoryPage = () => {
   };
 
   const onDelete = async (categoryID: string) => {
-    await dispatch(deleteCategory(categoryID));
-    dispatch(fetchCategories());
+    if(window.confirm('Вы уверены?')) {
+      await dispatch(deleteCategory(categoryID));
+      dispatch(fetchCategories());
+    }
   };
 
   useEffect(() => {

@@ -28,9 +28,18 @@ const transactionSlice = createSlice({
       .addCase(fetchTransactions.rejected, (state) => {
         state.isLoading = false;
       })
+      builder
+      .addCase(postTransaction.pending,state => {
+        state.isLoading = true
+      })
       .addCase(postTransaction.fulfilled, (state, action: PayloadAction<Transaction>) => {
+        state.isLoading = false
         state.transactions.push(action.payload);
       })
+      .addCase(postTransaction.rejected,(state) => {
+        state.isLoading = false
+      })
+        builder
       .addCase(editTransaction.fulfilled, (state, action: PayloadAction<Transaction>) => {
         const index = state.transactions.findIndex((tran) => tran.id === action.payload.id);
         if (index !== -1) {

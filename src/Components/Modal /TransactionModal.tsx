@@ -32,7 +32,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ transaction, onClos
 
   return (
     <Modal show={true} title={transaction ? 'Edit Transaction' : 'Add Transaction'} onClose={onClose}>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className={'p-3'}>
         <div className="mb-3">
           <label htmlFor="type" className="form-label">Type</label>
           <select
@@ -72,8 +72,10 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ transaction, onClos
             required
           />
         </div>
-        <button type="submit" className="btn btn-primary">Save</button>
-        <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
+        <div className={'text-center mt-2'}>
+          <button type="submit" className="btn btn-primary me-3">Save</button>
+          <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
+        </div>
       </form>
     </Modal>
   );
