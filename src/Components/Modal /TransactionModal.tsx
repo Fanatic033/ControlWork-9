@@ -1,8 +1,9 @@
-import React, {useState} from 'react';
-import {Transaction} from '../../types.ts';
-import {useAppDispatch, useAppSelector} from '../../hooks/redux-hooks.ts';
-import {editTransaction, postTransaction} from '../../Redux/TransactionThunks.ts';
-import {selectCategory} from '../../Redux/CategorySlice.ts';
+import React, { useState } from 'react';
+import { Transaction } from '../../types.ts';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks.ts';
+import { editTransaction, postTransaction } from '../../Redux/TransactionThunks.ts';
+import { selectCategory } from '../../Redux/CategorySlice.ts';
+import Modal from './Modal.tsx';
 
 interface TransactionModalProps {
   transaction: Transaction | null;
@@ -30,25 +31,51 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ transaction, onClos
   };
 
   return (
-    <div className="modal">
+    <Modal show={true} title={transaction ? 'Edit Transaction' : 'Add Transaction'} onClose={onClose}>
       <form onSubmit={handleSubmit}>
-        <label>Type</label>
-        <select value={type} onChange={(e) => setType(e.target.value as 'income' | 'expense')}>
-          <option value="income">Income</option>
-          <option value="expense">Expense</option>
-        </select>
-        <label>Category</label>
-        <select value={categoryID} onChange={(e) => setCategoryID(e.target.value)}>
-          {filteredCategories.map(cat => (
-            <option key={cat.id} value={cat.id}>{cat.name}</option>
-          ))}
-        </select>
-        <label>Amount</label>
-        <input type="number" value={amount} onChange={(e) => setAmount(Number(e.target.value))} />
-        <button type="submit">Save</button>
-        <button type="button" onClick={onClose}>Cancel</button>
+        <div className="mb-3">
+          <label htmlFor="type" className="form-label">Type</label>
+          <select
+            id="type"
+            className="form-select"
+            value={type}
+            onChange={(e) => setType(e.target.value as 'income' | 'expense')}
+            required
+          >
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+          </select>
+        </div>
+        <div className="mb-3">
+          <label htmlFor="category" className="form-label">Category</label>
+          <select
+            id="category"
+            className="form-select"
+            value={categoryID}
+            onChange={(e) => setCategoryID(e.target.value)}
+            required
+          >
+            <option value="">Select Category</option>
+            {filteredCategories.map(cat => (
+              <option key={cat.id} value={cat.id}>{cat.name}</option>
+            ))}
+          </select>
+        </div>
+        <div className="mb-3">
+          <label htmlFor="amount" className="form-label">Amount (KGS)</label>
+          <input
+            type="number"
+            id="amount"
+            className="form-control"
+            value={amount}
+            onChange={(e) => setAmount(Number(e.target.value))}
+            required
+          />
+        </div>
+        <button type="submit" className="btn btn-primary">Save</button>
+        <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
       </form>
-    </div>
+    </Modal>
   );
 };
 

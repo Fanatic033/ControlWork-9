@@ -29,8 +29,9 @@ const MainPage: React.FC = () => {
   };
 
   const onEdit = (transaction: Transaction) => {
-    setEditingTransaction(transaction);
+    console.log(transaction)
     setShowModal(true);
+    setEditingTransaction(transaction);
   };
 
   const onDelete = async (transactionID: string) => {
